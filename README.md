@@ -2,6 +2,8 @@
 
 一个用 [Three.js](https://threejs.org/) 从零打造的「我的世界」(Minecraft) 风格浏览器沙盒游戏。无需任何构建步骤、无第三方运行时依赖，打开即玩。
 
+> 🎮 在线试玩：https://winrainy.github.io/AutoPiano/ （由 GitHub Actions 自动部署到 GitHub Pages）
+
 ## 功能
 
 - 程序化生成的体素地形（起伏地表、泥土/石头分层、随机树木）
