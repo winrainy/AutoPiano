@@ -1,52 +1,39 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="renderer" content="webkit">
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-  <meta name="viewport" content="user-scalable=no">
-  <meta name="author" content="crystalworld">
-  <meta name="google-site-verification" content="jZwr88wY1PCrh_8cwdXUmjwSZASU82bq3GHXC6lehik" />
-  <title>Simple & Elegant Piano Online</title>
-  <link rel="shortcut icon" href="./favicon.png" />
-  <!-- 百度统计 autopiano.cn -->
-  <script>
-    var _hmt = _hmt || [];
-    (function () {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?af9df715a05051f16ccdd9290cbd02ef";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-  <script>
-    // 强制http访问
-    if (window.location.href.indexOf('https://www.autopiano.cn') > -1) {
-      window.location.href = 'http://www.autopiano.cn/';
-    }
-    var ua = window.navigator.userAgent
-    if (ua.match(/mobile/i) && ua.indexOf('iPad') < 0) {
-      // 是手机端浏览器 且 不是iPad
-      window.isMobile = true;
-      if (window.location.pathname.indexOf('/mobile') < 0) {
-        window.location.pathname = '/mobile';
-      }
-    } else {
-      window.isMobile = false;
-      if (window.location.pathname.indexOf('/mobile') >= 0) {
-        window.location.pathname = '/';
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>体素世界 · MiniCraft</title>
+  <link rel="stylesheet" href="./css/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./js/lib/three.module.js"
       }
     }
-
   </script>
-  <link href="/static/css/share.min.css" rel="stylesheet" />
 </head>
-
 <body>
-  <div id="app"></div>
-  <script src="/static/js/jquery3.min.js"></script>
-  <!-- built files will be auto injected -->
-</body>
+  <canvas id="game"></canvas>
 
+  <div id="crosshair"></div>
+
+  <div id="hotbar"></div>
+
+  <div id="overlay">
+    <div class="panel">
+      <h1>体素世界 · MiniCraft</h1>
+      <p class="sub">一个用 Three.js 从零打造的「我的世界」风格沙盒</p>
+      <div class="controls">
+        <div><b>点击屏幕</b> 开始 / 锁定鼠标</div>
+        <div><b>W A S D</b> 移动 · <b>空格</b> 跳跃 · <b>鼠标</b> 转视角</div>
+        <div><b>左键</b> 挖掉方块 · <b>右键</b> 放置方块</div>
+        <div><b>1–8 / 滚轮</b> 切换方块 · <b>Esc</b> 释放鼠标</div>
+      </div>
+      <div class="hint">点击此处进入游戏</div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/game/main.js"></script>
+</body>
 </html>
