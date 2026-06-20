@@ -61,6 +61,14 @@
   }
 
   .piano-options { width: 90%; height: 50px; margin: 10px auto 15px; padding: 0; position: relative;
+    .instrument-wrap { position: absolute; left: 1%; top: 50%; transform: translateY(-50%);
+      .instrument-btn { display: inline-block; height: 32px; line-height: 32px; padding: 0 18px; margin-right: 10px; border-radius: 16px; background: #d8d9db; color: @c-black; font-size: 14px; user-select: none; transition: .2s;
+        &:hover { cursor: pointer; }
+      }
+      .instrument-btn.active { background: @c-green; color: #fff; }
+      .instrument-btn.disabled { opacity: .5; cursor: not-allowed; }
+      .instrument-loading { margin-left: 5px; color: @c-blue; font-size: 13px; vertical-align: middle; }
+    }
     .option-item-wrap { position: absolute; right: 1%; }
     .option-item { display: inline-block; height: 50px; line-height: 50px; margin: 0 15px;
       .label {
@@ -149,6 +157,13 @@
 
     <div class="piano-options responsive-section-a">
 
+      <div class="instrument-wrap">
+        <span class="instrument-btn" v-for="ins in instruments" :key="ins.key"
+          :class="{ active: currentInstrument === ins.key, disabled: instrumentLoading }"
+          @click="switchInstrument(ins.key)">{{ ins.label }}</span>
+        <span class="instrument-loading" v-show="instrumentLoading">音色加载中...</span>
+      </div>
+
       <div class="option-item-wrap">
         <div class="option-item">
           <label class="label">
@@ -198,6 +213,12 @@ export default {
       showKeyName: true, // 显示键名
       showNoteName: false, // 显示音符名
       Notes: Notes,
+      instruments: [
+        { key: 'piano', label: '钢琴' },
+        { key: 'guitar-acoustic', label: '吉他' }
+      ],
+      currentInstrument: 'piano', // 当前乐器
+      instrumentLoading: false, // 乐器音色加载中
       synth: null,
       keydownTimer: null,
       keyLock: false,
@@ -221,11 +242,32 @@ export default {
       this.bindKeyBoradEvent()
       this.setListener()
 
-      this.synth = SmapleLibrary.load({
-        instruments: "piano"
-      }).toMaster()
+      this.instrumentLoading = true
+      this.synth = await this.loadInstrument(this.currentInstrument)
+      this.instrumentLoading = false
 
       // this.synth = new Tone.PolySynth( 10 ).toMaster()
+    },
+    // 加载指定乐器音色，返回 Promise<Sampler>
+    loadInstrument(key) {
+      return new Promise((resolve) => {
+        let synth = SmapleLibrary.load({
+          instruments: key,
+          ext: '.mp3',
+          onload: () => resolve(synth)
+        }).toMaster()
+      })
+    },
+    // 切换乐器（钢琴 / 吉他等）
+    async switchInstrument(key) {
+      if (this.instrumentLoading || key === this.currentInstrument) return
+      this.instrumentLoading = true
+      let newSynth = await this.loadInstrument(key)
+      // 释放旧音色，避免叠音与内存泄漏
+      if (this.synth) this.synth.dispose()
+      this.synth = newSynth
+      this.currentInstrument = key
+      this.instrumentLoading = false
     },
     computeEleSize() {
       let wkey_width = $('.piano-key-wrap').width() / 36;
