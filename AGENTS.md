@@ -2,23 +2,20 @@
 
 ## Cursor Cloud specific instructions
 
-AutoPiano is a single web application: a Vue 2 + webpack 2 online piano (Tone.js for audio). There is no backend service to run — everything is client-side served by the webpack dev server.
-
-### Node version (important)
-This is a 2019-era toolchain (webpack 2, Babel 6, vue-loader 13) that does **not** run on modern Node. The environment is pinned to **Node 10** (via nvm). Node 10 is set as the default in `~/.bashrc`, so a normal login shell already uses it. If you ever see the wrong version, the system `/exec-daemon/node` (Node 22) can shadow it on `PATH`; reactivate Node 10 with:
-
-```
-export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; nvm use 10
-```
+This repository is **MiniCraft**: a single browser-based voxel sandbox game (Minecraft-style) built with vanilla JS + Three.js. It is a static client-side app — there is no backend, database, or build step.
 
 ### Run (dev)
-- Dev server: `npm run dev` (alias `npm start`) → serves at `http://localhost:5000` with hot reload. The script auto-opens a browser via `opn`; in a headless VM this open attempt fails harmlessly and the server keeps running.
-- Production build: `npm run build` (outputs to `dist/`). Use dev for development.
+- `npm run dev` (alias `npm start`) → runs `node server.js`, a zero-dependency static file server on `http://localhost:5000`. Set `PORT` to change the port.
+- Any Node.js version works (the server only uses Node's built-in `http`/`fs`). Alternatively serve the folder with anything else, e.g. `python3 -m http.server 5000`.
+- The game uses ES Modules + an `importmap`, so it MUST be loaded over HTTP. Opening `index.html` via `file://` will not work.
 
-### Lint / Test
-There are no lint or test scripts defined in `package.json` (only `dev`, `start`, `build`). No test framework is configured.
+### Dependencies
+- There are **no npm dependencies**. Three.js is vendored at `js/lib/three.module.js` (r160) and imported via the `"three"` importmap entry. Do not `npm install` Three.js; edit/replace the vendored file if an upgrade is needed.
 
-### Notes / gotchas
-- `npm install` reports many audit vulnerabilities and a few deprecation/`notsup` warnings (e.g. `fsevents` is macOS-only, `@noble/hashes` wants newer Node) — these are expected and do not break the Node 10 build.
-- Harmless runtime console noise in the browser: a `favicon` 404 and an `AudioContext` "user gesture" warning (audio starts after the first click/keypress). Neither affects functionality.
-- The piano is played by clicking on-screen keys or pressing mapped letter/number keyboard keys.
+### Lint / Test / Build
+- None configured. There is no build step, no linter, and no test suite. Verify changes by running the dev server and playing in the browser.
+
+### Code layout / notes
+- Game logic lives in `js/game/`: `blocks.js` (block defs + procedural texture atlas), `world.js` (voxel data, terrain gen, meshing, DDA raycast), `player.js` (physics/AABB collision), `controls.js` (pointer lock + input), `main.js` (scene + render loop + dig/place + hotbar).
+- The world is one merged, face-culled mesh; it is fully rebuilt on every block edit (`world.rebuild()`), which is fine for the current `SIZE` (48²).
+- Manual testing requires pointer lock: click the canvas to lock the mouse before WASD/mouse-look/dig/place will respond.
